@@ -53,11 +53,24 @@ public class DatabaseSeeder {
         Random random = new Random();
         for(Developer developer: developerList)
         {
+            List<Language> languages = new ArrayList<>();
             int languageIndex = random.nextInt(languageList.size());
+            languages.add(languageList.get(languageIndex));
+            languageIndex = random.nextInt(languageList.size());
+            languages.add(languageList.get(languageIndex));
+            
+            List<ProgrammingLanguage> programmingLanguages = new ArrayList<>();
             int programmingLanguageIndex = random.nextInt(programmingLanguageList.size());
+            programmingLanguages.add(programmingLanguageList.get(programmingLanguageIndex));
+            programmingLanguageIndex = random.nextInt(programmingLanguageList.size());
+            programmingLanguages.add(programmingLanguageList.get(programmingLanguageIndex));
+            programmingLanguageIndex = random.nextInt(programmingLanguageList.size());
+            programmingLanguages.add(programmingLanguageList.get(programmingLanguageIndex));
+            
+            
             developer = developerRepository.save(developer);
-            developer.getLanguages().add(languageList.get(languageIndex));
-            developer.getProgrammingLanguages().add(programmingLanguageList.get(programmingLanguageIndex));
+            developer.getLanguages().addAll(languages);
+            developer.getProgrammingLanguages().addAll(programmingLanguages);
             developerRepository.save(developer);
         }
        

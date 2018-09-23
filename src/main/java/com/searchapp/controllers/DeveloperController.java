@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +32,12 @@ public class DeveloperController {
    public Iterable<Developer> findAll() {
        return developerRepository.findAll();
    }
+   @PostMapping("/search")
+   public Iterable<Developer> search(@RequestBody Developer criteria)
+   {
+       
+       return developerRepository.findByLanguages(criteria.getLanguages());
+   }
    @GetMapping("/{id}")
    public Developer findOne(@PathVariable("id") Integer id) {
        Optional<Developer> developer = developerRepository.findById(id);
@@ -45,6 +52,15 @@ public class DeveloperController {
    
    @PostMapping("/add")
    public Developer postDeveloper(@RequestBody Developer developer){
+       Developer newDeveloper = new Developer(developer.getEmail());
+       newDeveloper = developerRepository.save(newDeveloper);
+       newDeveloper.setLanguages(developer.getLanguages());
+       newDeveloper.setProgrammingLanguages(developer.getProgrammingLanguages());
+       newDeveloper = developerRepository.save(newDeveloper);
+       return newDeveloper;
+   }
+   @PutMapping("/edit")
+   public Developer putDeveloper(@RequestBody Developer developer){
        developer = developerRepository.save(developer);
        return developer;
    }

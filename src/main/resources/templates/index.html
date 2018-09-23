@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -34,20 +35,149 @@
         <div class="container-fluid">
 
 
-                <div class="row lead justify-content-center">
+                <div class="row lead justify-content-center mb-2">
                     <h2>Simple Search Application</h2>
                 </div>
+            <div id="search">
+                <div class="row mb-2">
+                
+                    <div class="col-4">
+                    <label class="form-control-label">Languages</label>
+                    <select v-model="selectedLanguages" class="form-control" multiple="multiple">
+                      <!-- options variable is reactive -->
+                      <option v-for="option in languageOptions"  :value="option">
+                          {{option.code}}
+
+                      </option>
+                    </select>
+                    </div>
+                    <div class="col-4">
+                    <label class="form-control-label">Programming Languages</label>
+                    <select v-model="selectedProgrammingLanguages" class="form-control" multiple="multiple">
+                      <!-- options variable is reactive -->
+                      <option v-for="option in programmingLanguageOptions" 
+                              :value="option"
+
+                              >
+                          {{option.name}}
+
+                      </option>
+                    </select>
+                    </div>
+                    <div class="col-4">
+                    <button type="button" class="btn btn-success" @click="search">Search</button>
+                    </div>
+                    
+                </div>
+            </div>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-5">
                     <!--{{developers}}-->
                         <div id="developers">
-                           
+                           <div v-if="showModalEdit">
+                                <transition name="modal">
+                                  <div class="modal-mask">
+                                    <div class="modal-wrapper">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h4 class="modal-title text-center">Edit Developer</h4>
+                                            <button type="button" class="close" @click="showModalEdit=false">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            
+                                          </div>
+                                          <div class="modal-body">
+                                              <label class="form-control-label">Email</label>                           
+                                              <input type="text" class="form-control" v-model="developerEmail">
+                                              <label class="form-control-label">Languages</label>
+                                              <select v-model="selectedLanguages" class="form-control" multiple="multiple">
+                                                <!-- options variable is reactive -->
+                                                <option v-for="option in languageOptions"  :value="option">
+                                                    {{option.code}}
+                                                        
+                                                </option>
+                                              </select>
+                                              
+                                              <label class="form-control-label">Programming Languages</label>
+                                              <select v-model="selectedProgrammingLanguages" class="form-control" multiple="multiple">
+                                                <!-- options variable is reactive -->
+                                                <option v-for="option in programmingLanguageOptions" 
+                                                        :value="option"
+                                                        
+                                                        >
+                                                    {{option.name}}
+                                                        
+                                                </option>
+                                              </select>
+
+                                          </div>
+                                            
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" @click="putDeveloper">Save Changes</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </transition>
+                            </div>
+                            
+                            <div v-if="showModalAdd">
+                                <transition name="modal">
+                                  <div class="modal-mask">
+                                    <div class="modal-wrapper">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h4 class="modal-title text-center">Add Developer</h4>
+                                            <button type="button" class="close" @click="showModalAdd=false">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            
+                                          </div>
+                                          <div class="modal-body">
+                                              <label class="form-control-label">Email</label>                           
+                                              <input type="text" class="form-control" v-model="developerEmail">
+                                              <label class="form-control-label">Languages</label>
+                                              <select v-model="selectedLanguages" class="form-control" multiple="multiple">
+                                                <!-- options variable is reactive -->
+                                                <option v-for="option in languageOptions"  :value="option">
+                                                    {{option.code}}
+                                                        
+                                                </option>
+                                              </select>
+                                              
+                                              <label class="form-control-label">Programming Languages</label>
+                                              <select v-model="selectedProgrammingLanguages" class="form-control" multiple="multiple">
+                                                <!-- options variable is reactive -->
+                                                <option v-for="option in programmingLanguageOptions" 
+                                                        :value="option"
+                                                        
+                                                        >
+                                                    {{option.name}}
+                                                        
+                                                </option>
+                                              </select>
+
+                                          </div>
+                                            
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" @click="postDeveloper">Save</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </transition>
+                            </div>
+                            
                             <div class="row">
                                 <div class="col-8">
-                                  <input type="text" class="form-control" v-model="developer">
+                                    <h2 class="lead text-center"> Developers</h2>
                                 </div>
                                 <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="postDeveloper">Add</a>
+                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -57,7 +187,7 @@
                                 <th class="text-center">Programming Languages</th>
 
                                 <th class="text-center">Languages</th>
-
+                                <th colspan="2" class="text-center">Actions</th>
 
                                 </thead>
                                 <tbody>
@@ -65,6 +195,11 @@
                                         <td class="text-center">{{developer.email}}</td>
                                         <td class="text-center">{{programmingLanguageListToString(developer.programmingLanguages)}}</td>
                                         <td class="text-center">{{languageListToString(developer.languages)}}</td>
+                                        <td>
+                                                                                        
+                                            <a href="#" class="btn btn-success" @click="showEditModal(index)"><i class="fa fa-edit"></i></a>
+
+                                        </td>
                                         <td><a href="#" class="btn btn-danger" @click="deleteDeveloper(index)"><i class="fa fa-trash"></i></a></td>
                                     </tr>
                                 </tbody>
@@ -74,7 +209,7 @@
                     </div>
                     <div class="col-3">
                         <div id="languages">
-                            <div v-if="showModal">
+                            <div v-if="showModalEdit">
                                 <transition name="modal">
                                   <div class="modal-mask">
                                     <div class="modal-wrapper">
@@ -82,14 +217,14 @@
                                         <div class="modal-content">
                                           <div class="modal-header">
                                             <h4 class="modal-title text-center">Edit Language</h4>
-                                            <button type="button" class="close" @click="showModal=false">
+                                            <button type="button" class="close" @click="showModalEdit=false">
                                               <span aria-hidden="true">&times;</span>
                                             </button>
                                             
                                           </div>
                                           <div class="modal-body">
                                               <label class="form-control-label">Code</label>                           
-                                              <input type="text" class="form-control" v-model="languageEdit">
+                                              <input type="text" class="form-control" v-model="languageCode">
 
                                           </div>
                                             
@@ -102,12 +237,41 @@
                                   </div>
                                 </transition>
                             </div>
+                            
+                            <div v-if="showModalAdd">
+                                <transition name="modal">
+                                  <div class="modal-mask">
+                                    <div class="modal-wrapper">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h4 class="modal-title text-center">Add Language</h4>
+                                            <button type="button" class="close" @click="showModalAdd=false">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            
+                                          </div>
+                                          <div class="modal-body">
+                                              <label class="form-control-label">Code</label>                           
+                                              <input type="text" class="form-control" v-model="languageCode">
+
+                                          </div>
+                                            
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" @click="postLanguage">Save</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </transition>
+                            </div>
                             <div class="row">
                                 <div class="col-8">
-                                  <input type="text" class="form-control" v-model="languageAdd">
+                                    <h2 class="lead text-center">Languages</h2>
                                 </div>
                                 <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="postLanguage">Add</a>
+                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -120,21 +284,22 @@
                                     <tr v-for="(language, index) in languages">
                                         <td class="text-center">{{language.code}}</td>
                                       
-                                        <td><a href="#" class="btn btn-danger" @click="deleteLanguage(index)"><i class="fa fa-trash"></i></a></td>
                                         <td>
                                                                                         
                                             <a href="#" class="btn btn-success" @click="showEditModal(index)"><i class="fa fa-edit"></i></a>
 
                                         </td>
+                                        <td><a href="#" class="btn btn-danger" @click="deleteLanguage(index)"><i class="fa fa-trash"></i></a></td>
+                                        
                                     </tr>
                                 </tbody>
    
                             </table>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <div id="programming-languages">
-                            <div v-if="showModal">
+                            <div v-if="showModalEdit">
                                 <transition name="modal">
                                   <div class="modal-mask">
                                     <div class="modal-wrapper">
@@ -142,14 +307,14 @@
                                         <div class="modal-content">
                                           <div class="modal-header">
                                             <h4 class="modal-title text-center">Edit Programming Language</h4>
-                                            <button type="button" class="close" @click="showModal=false">
+                                            <button type="button" class="close" @click="showModalEdit=false">
                                               <span aria-hidden="true">&times;</span>
                                             </button>
                                             
                                           </div>
                                           <div class="modal-body">
                                               <label class="form-control-label">Name</label>                           
-                                              <input type="text" class="form-control" v-model="programmingLanguageEdit">
+                                              <input type="text" class="form-control" v-model="programmingLanguageName">
 
                                           </div>
                                             
@@ -162,12 +327,43 @@
                                   </div>
                                 </transition>
                             </div>
+                            
+                                             
+                            <div v-if="showModalAdd">
+                                <transition name="modal">
+                                  <div class="modal-mask">
+                                    <div class="modal-wrapper">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h4 class="modal-title text-center">Add New Programming Language</h4>
+                                            <button type="button" class="close" @click="showModalAdd=false">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            
+                                          </div>
+                                          <div class="modal-body">
+                                              <label class="form-control-label">Name</label>                           
+                                              <input type="text" class="form-control" v-model="programmingLanguageName">
+
+                                          </div>
+                                            
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" @click="postProgrammingLanguage">Save</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </transition>
+                            </div>
+                            
                             <div class="row">
                                 <div class="col-8">
-                                  <input type="text" class="form-control" v-model="programmingLanguageAdd">
+                                    <h2 class="lead text-center">Programming Lanugages</h2>
                                 </div>
                                 <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="postProgrammingLanguage">Add</a>
+                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -179,16 +375,17 @@
                                 <tbody>
                                     <tr v-for="(programmingLanguage, index) in programmingLanguages">
                                         <td class="text-center">{{programmingLanguage.name}}</td>
-                                                                    
-                                        <td>
-                                            <a href="#" class="btn btn-danger" @click="deleteProgrammingLanguage(index)"><i class="fa fa-trash"></i></a>
-                                                                                        
-                                        </td>
-                                        <td>
+                                           
+                                         <td>
                                                                                         
                                             <a href="#" class="btn btn-success" @click="showEditModal(index)"><i class="fa fa-edit"></i></a>
 
                                         </td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger" @click="deleteProgrammingLanguage(index)"><i class="fa fa-trash"></i></a>
+                                                                                        
+                                        </td>
+                                       
                                         
 
                                     </tr>
@@ -203,6 +400,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script type="text/babel" th:src="@{/js/search_app.js}"></script>
         <script type="text/babel">
             
             var developer_app = new Vue({
@@ -210,7 +408,15 @@
                 data () {
                     return {
                     developers: null,
-                    developer: ''
+                    selectedLanguages: [],
+                    languageOptions: [],
+                    selectedProgrammingLanguages: [],
+                    programmingLanguageOptions: [],
+                    developerEmail: '',
+                    editIndex: '',
+                    developerEdiId: '',
+                    showModalAdd: false,
+                    showModalEdit: false
                     
                     }
                 },
@@ -218,6 +424,12 @@
                     this.getDevelopers();
                 },
                 methods: {
+                    
+                    reflectEdit: function(editedItem){
+                        this.developers[this.editIndex].email=editedItem.email;
+                        this.developers[this.editIndex].languages=editedItem.languages;
+                        this.developers[this.editIndex].programmingLanguages=editedItem.programmingLanguages;
+                    },
                     languageListToString: function(languageList) {
                         var result = languageList.map(language => language.code);
                         return result.join(", ");
@@ -240,17 +452,54 @@
                         });
                     },
                     postDeveloper: function(){
+                        this.showModalAdd = false;
                         axios.post('/api/developers/add', {
-                        email: this.developer
+                        email: this.developerEmail,
+                        languages: this.selectedLanguages,
+                        programmingLanguages: this.selectedProgrammingLanguages
                       })
                       .then(function (response) {
                         console.log(response);
-                        language_app.language = '';
-                        language_app.languages.push(response.data);
+                        developer_app.developerEmail = '';
+                        developer_app.developers.push(response.data);
                       })
                       .catch(function (error) {
                         console.log(error);
                       });
+                    },
+                    putDeveloper: function(){
+                        this.showModalEdit = false;
+                        axios.put('/api/developers/edit', {
+                        id: this.developerEditId,
+                        email: this.developerEmail,
+                        languages: this.selectedLanguages,
+                        programmingLanguages: this.selectedProgrammingLanguages
+                      })
+                      .then(function (response) {
+                        console.log(response);
+                        developer_app.developerEmail = '';
+                        developer_app.reflectEdit(response.data);
+                        
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
+                      
+                    },
+                    showEditModal: function(index) {
+                        //console.log("index "+index);
+                        var item = this.developers[index];
+                        //console.log("item "+item);
+                        this.editIndex = index;
+                        this.developerEditId = item.id;
+                        this.developerEmail = item.email;
+                        this.selectedLanguages = item.languages;
+                        this.selectedProgrammingLanguages = item.programmingLanguages;
+                        this.showModalEdit= true;
+                    },
+                    showAddModal: function() {
+                      
+                        this.showModalAdd= true;
                     },
                 },
             });
@@ -260,11 +509,11 @@
                 data () {
                     return {
                         languages: null,
-                        languageAdd: '',
+                        languageCode: '',
                         editIndex: '',
-                        languageEdit: '',
                         languageEdiId: '',
-                        showModal: false
+                        showModalEdit: false,
+                        showModalAdd: false
                     }
                 },
                 mounted () {
@@ -273,24 +522,28 @@
                 methods : {
                     reflectEdit: function(editedItem){
                         this.languages[this.editIndex].code=editedItem.code;
+                         developer_app.getDevelopers();
                     },
                     getLanguages: function(){
                         axios
                         .get('/api/languages')
                         .then(response => {
                             this.languages = response.data;
+                            developer_app.languageOptions = this.languages;
+                            search_app.languageOptions = this.languages;
                         })
                         .catch(function (error) {
                             console.log(error);
                           });
                     },
                     postLanguage: function(){
+                        this.showModalAdd = false;
                         axios.post('/api/languages/add', {
-                        code: this.languageAdd
+                        code: this.languageCode
                       })
                       .then(function (response) {
                         console.log(response);
-                        language_app.language = '';
+                        language_app.languageCode = '';
                         language_app.languages.push(response.data);
                       })
                       .catch(function (error) {
@@ -298,16 +551,16 @@
                       });
                     },
                     putLanguage: function(){
-                        this.showModal = false;
+                        this.showModalEdit = false;
                         axios.put('/api/languages/edit', {
                         id: this.languageEditId,
-                        code: this.languageEdit
+                        code: this.languageCode
                       })
                       .then(function (response) {
                         console.log(response);
-                        language_app.languageEdit = '';
+                        language_app.languageCode = '';
                         language_app.reflectEdit(response.data);
-                        developer_app.getDevelopers();
+                       
                       })
                       .catch(function (error) {
                         console.log(error);
@@ -322,13 +575,16 @@
                         developer_app.getDevelopers();
                     },
                     showEditModal: function(index) {
-                        console.log("index "+index);
+                        //console.log("index "+index);
                         var item = this.languages[index];
-                        console.log("item "+item);
+                        //console.log("item "+item);
                         this.editIndex = index;
                         this.languageEditId = item.id;
-                        this.languageEdit = item.code;
-                        this.showModal= true;
+                        this.languageCode = item.code;
+                        this.showModalEdit= true;
+                    },
+                    showAddModal: function(){
+                        this.showModalAdd = true;
                     },
                 },
                 
@@ -339,11 +595,11 @@
                 data () {
                     return {
                         programmingLanguages: null,
-                        programmingLanguageAdd: '',
+                        programmingLanguageName: '',
                         editIndex: '',
-                        programmingLanguageEdit: '',
                         programmingLanguageEdiId: '',
-                        showModal: false
+                        showModalEdit: false,
+                        showModalAdd: false
                         
                     }
                 },
@@ -354,24 +610,30 @@
                 methods : {
                     reflectEdit: function(editedItem){
                         this.programmingLanguages[this.editIndex].name = editedItem.name;
+                        developer_app.getDevelopers();
                     },
                     getProgrammingLanguages: function(){
                         axios
                         .get('/api/programming-languages')
                         .then(response => {
                             this.programmingLanguages = response.data;
+                            developer_app.programmingLanguageOptions = this.programmingLanguages;
+                            search_app.programmingLanguageOptions = this.programmingLanguages;
+
                         })
                         .catch(function (error) {
                             console.log(error);
                           });
                     },
                     postProgrammingLanguage: function(){
+                                            
+                        this.showModalAdd = false;
                         axios.post('/api/programming-languages/add', {
-                        name: this.programmingLanguageAdd
+                        name: this.programmingLanguageName
                       })
                       .then(function (response) {
                         console.log(response);
-                        programming_language_app.programmingLanguageAdd = '';
+                        programming_language_app.programmingLanguageName = '';
                         programming_language_app.programmingLanguages.push(response.data);
                       })
                       .catch(function (error) {
@@ -380,16 +642,15 @@
                     },
                     
                     putProgrammingLanguage: function(){
-                        this.showModal = false;
+                        this.showModalEdit = false;
                         axios.put('/api/programming-languages/edit', {
                         id: this.programmingLanguageEditId,
-                        name: this.programmingLanguageEdit
+                        name: this.programmingLanguageName
                       })
                       .then(function (response) {
                         console.log(response);
-                        programming_language_app.programmingLanguageEdit = '';
+                        programming_language_app.programmingLanguageName = '';
                         programming_language_app.reflectEdit(response.data);
-                        developer_app.getDevelopers();
                       })
                       .catch(function (error) {
                         console.log(error);
@@ -409,8 +670,12 @@
                         var item = this.programmingLanguages[index];
                         this.editIndex = index;
                         this.programmingLanguageEditId = item.id;
-                        this.programmingLanguageEdit = item.name;
-                        this.showModal= true;
+                        this.programmingLanguageName = item.name;
+                        this.showModalEdit = true;
+                    },
+                    showAddModal: function(){
+                        this.showModalAdd = true;
+                        
                     },
                 },
                 

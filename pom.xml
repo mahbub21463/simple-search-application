@@ -43,9 +43,9 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <scope>runtime</scope>
         </dependency>
                 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->

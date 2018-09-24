@@ -14,4 +14,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ProgrammingLanguageRepository extends CrudRepository<ProgrammingLanguage, Integer> {
     
+    ProgrammingLanguage findByName(String name);
 }

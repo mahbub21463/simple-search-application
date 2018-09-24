@@ -1,9 +1,13 @@
 package com.searchapp.controllers;
 
 import com.searchapp.dao.DeveloperRepository;
+import com.searchapp.dao.ProgrammingLanguageRepository;
 import com.searchapp.exceptions.ResourceNotFoundException;
 import com.searchapp.models.Developer;
 import com.searchapp.models.Language;
+import com.searchapp.models.ProgrammingLanguage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,16 +32,67 @@ public class DeveloperController {
     @Autowired
     DeveloperRepository developerRepository;
     
+    @Autowired
+    ProgrammingLanguageRepository programmingLanguageRepository;
+    
    @GetMapping()
    public Iterable<Developer> findAll() {
        return developerRepository.findAll();
    }
-   @PostMapping("/search")
-   public Iterable<Developer> search(@RequestBody Developer criteria)
+   @GetMapping("/search-who-write-two-programming-language-speak-one-language")
+   public Iterable<Developer> searchWhoWriteTwoProgrammingLanguageSpeakOneLanguage(@RequestParam(value="language") String language, @RequestParam(value="programmingLanguage") String[] programmingLanguages)
    {
-       
-       return developerRepository.findByLanguages(criteria.getLanguages());
+       if(language == null || programmingLanguages == null || programmingLanguages.length<2)
+       {
+           throw new RuntimeException("Invalid parameters");
+       }
+       List<Developer> developers = developerRepository.findByLanguages_CodeAndProgrammingLanguages_Name(language, programmingLanguages[0]);
+       List<Developer> resultList = new ArrayList<>();
+       ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(programmingLanguages[1]);
+       if(programmingLanguage == null)
+       {
+           throw new RuntimeException("Invalid parameters");
+       }
+       for(Developer developer : developers)
+       {
+           if(developer.getProgrammingLanguages().contains(programmingLanguage))
+           {
+               resultList.add(developer);
+           }
+       }
+       return resultList;
    }
+   @GetMapping("/search")
+   public Iterable<Developer> search(@RequestParam(value="language", required=false) String[] languages, @RequestParam(value="programmingLanguage", required=false) String[] programmingLanguages)
+   {
+       if(languages == null && programmingLanguages == null)
+       {
+           return null;
+       }
+       else if(languages == null)
+       {
+           return developerRepository.findByProgrammingLanguages_NameIn(Arrays.asList(programmingLanguages));
+       }
+       else if(programmingLanguages == null)
+       {
+                     
+           return developerRepository.findByLanguages_CodeIn(Arrays.asList(languages));
+ 
+       }
+       else
+       {
+                  
+           return developerRepository.findByLanguages_CodeInAndProgrammingLanguages_NameIn(Arrays.asList(languages), Arrays.asList(programmingLanguages));
+
+       }
+       
+   }
+//   @PostMapping("/search")
+//   public Iterable<Developer> search(@RequestBody Developer criteria)
+//   {
+//       
+//       return developerRepository.findByLanguages(criteria.getLanguages());
+//   }
    @GetMapping("/{id}")
    public Developer findOne(@PathVariable("id") Integer id) {
        Optional<Developer> developer = developerRepository.findById(id);

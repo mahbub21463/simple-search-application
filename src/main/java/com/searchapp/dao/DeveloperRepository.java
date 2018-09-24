@@ -20,18 +20,10 @@ import org.springframework.stereotype.Repository;
 @Repository("developerRepository")
 public interface DeveloperRepository extends CrudRepository<Developer, Integer> {
     
-    public List<Developer> findByLanguagesIn(Set<Language> languages);
-//    public List<Developer> searchDevelopers(List<Language> languages, List<ProgrammingLanguage> programmingLanguages) {
-//        CriteriaBuilder cb = em.getCriteriaBuilder();
-//CriteriaQuery<Profile> criteria = cb.createQuery(Profile.class);
-//Root<Profile> root = criteria.from(Profile.class);
-//
-//// Profile_.categories is a collection of Category objects
-//// categories is collection of Long (category ids) that i want to search in
-//// but is not working
-//criteria.where(root.get(Profile_.categories).in(categories))
-//
-//List<Profile> results = em.createQuery(criteria).getResultList();
+    List<Developer> findByLanguages_CodeAndProgrammingLanguages_Name(String code, String name);
+    List<Developer> findByLanguages_CodeIn(List<String> codes);
+    List<Developer> findByProgrammingLanguages_NameIn(List<String> names);
+    List<Developer> findByLanguages_CodeInAndProgrammingLanguages_NameIn(List<String> codes, List<String> names);
 
     
 }

@@ -11,24 +11,7 @@
                 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
          
-        <style>
-            .modal-mask {
-                position: fixed;
-                z-index: 9998;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, .5);
-                display: table;
-                transition: opacity .3s ease;
-              }
-
-              .modal-wrapper {
-                display: table-cell;
-                vertical-align: middle;
-              }
-        </style>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 
     </head>
     <body>
@@ -39,38 +22,32 @@
                     <h2>Simple Search Application</h2>
                 </div>
             <div id="search">
-                <div class="row mb-2">
+                <div class="row mb-3">
                 
                     <div class="col-4">
                     <label class="form-control-label">Languages</label>
-                    <select v-model="selectedLanguages" class="form-control" multiple="multiple">
-                      <!-- options variable is reactive -->
-                      <option v-for="option in languageOptions"  :value="option">
-                          {{option.code}}
-
-                      </option>
-                    </select>
+                    <input v-model="language" class="form-control" placeholder="en, ja, bd"/>
+                                        
+                 
                     </div>
                     <div class="col-4">
                     <label class="form-control-label">Programming Languages</label>
-                    <select v-model="selectedProgrammingLanguages" class="form-control" multiple="multiple">
-                      <!-- options variable is reactive -->
-                      <option v-for="option in programmingLanguageOptions" 
-                              :value="option"
+                    <input v-model="programmingLanguage" class="form-control" placeholder="ruby, JavaScript, python"/>
 
-                              >
-                          {{option.name}}
-
-                      </option>
-                    </select>
                     </div>
                     <div class="col-4">
-                    <button type="button" class="btn btn-success" @click="search">Search</button>
+                        <br>
+                    <button type="button" class="btn btn-success mt-1" @click="search">Search</button>
                     </div>
                     
                 </div>
+                <div class="row mb-3">
+                    <button type="button" class="btn btn-success ml-5" @click="searchWhoWriteRuby">Search who write ruby</button>
+                    <button type="button" class="btn btn-success ml-5" @click="searchWhoWriteRubySpeakJapanese">Search who write ruby and speak Japanese</button>
+                    <button type="button" class="btn btn-success ml-5" @click="searchWhoWriteRubyAndJavascriptSpeakJapanese">Search who write ruby and javascript also speak Japanese</button>
+                </div>
             </div>
-                <div class="row">
+                <div class="row pt-5">
                     <div class="col-5">
                     <!--{{developers}}-->
                         <div id="developers">
@@ -177,7 +154,8 @@
                                     <h2 class="lead text-center"> Developers</h2>
                                 </div>
                                 <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
+                                  <a href="#" class="btn btn-primary" @click="sort()">Sort</a>
+                                  <a href="#" class="btn btn-success ml-2" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -267,11 +245,12 @@
                                 </transition>
                             </div>
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-6">
                                     <h2 class="lead text-center">Languages</h2>
                                 </div>
-                                <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
+                                <div class="col-6">
+                                   <a href="#" class="btn btn-primary" @click="sort()">Sort</a>
+                                  <a href="#" class="btn btn-success ml-2" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -359,11 +338,12 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-7">
                                     <h2 class="lead text-center">Programming Lanugages</h2>
                                 </div>
-                                <div class="col-4">
-                                  <a href="#" class="btn btn-success" @click="showAddModal()">Add</a>
+                                <div class="col-5">
+                                  <a href="#" class="btn btn-primary" @click="sort()">Sort</a>
+                                  <a href="#" class="btn btn-success ml-2" @click="showAddModal()">Add</a>
                                 </div>
                              </div>
                             <table class="table">
@@ -401,287 +381,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script type="text/babel" th:src="@{/js/search_app.js}"></script>
-        <script type="text/babel">
-            
-            var developer_app = new Vue({
-                el: '#developers',
-                data () {
-                    return {
-                    developers: null,
-                    selectedLanguages: [],
-                    languageOptions: [],
-                    selectedProgrammingLanguages: [],
-                    programmingLanguageOptions: [],
-                    developerEmail: '',
-                    editIndex: '',
-                    developerEdiId: '',
-                    showModalAdd: false,
-                    showModalEdit: false
-                    
-                    }
-                },
-                mounted () {
-                    this.getDevelopers();
-                },
-                methods: {
-                    
-                    reflectEdit: function(editedItem){
-                        this.developers[this.editIndex].email=editedItem.email;
-                        this.developers[this.editIndex].languages=editedItem.languages;
-                        this.developers[this.editIndex].programmingLanguages=editedItem.programmingLanguages;
-                    },
-                    languageListToString: function(languageList) {
-                        var result = languageList.map(language => language.code);
-                        return result.join(", ");
-                    },
-                    programmingLanguageListToString: function(progrmmingLanguageList) {
-                        var result = progrmmingLanguageList.map(programmingLanguage => programmingLanguage.name);
-                        return result.join(", ");
-                    },
-                    deleteDeveloper: function(index){
-                        var d = this.developers[index];
-                        axios.delete('/api/developers/'+d.id);
-                        this.developers.splice(index, 1);
-                    },
-                    getDevelopers: function(){
-                        axios
-                        .get('/api/developers')
-                        .then(response => (this.developers = response.data))
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    },
-                    postDeveloper: function(){
-                        this.showModalAdd = false;
-                        axios.post('/api/developers/add', {
-                        email: this.developerEmail,
-                        languages: this.selectedLanguages,
-                        programmingLanguages: this.selectedProgrammingLanguages
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        developer_app.developerEmail = '';
-                        developer_app.developers.push(response.data);
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                    },
-                    putDeveloper: function(){
-                        this.showModalEdit = false;
-                        axios.put('/api/developers/edit', {
-                        id: this.developerEditId,
-                        email: this.developerEmail,
-                        languages: this.selectedLanguages,
-                        programmingLanguages: this.selectedProgrammingLanguages
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        developer_app.developerEmail = '';
-                        developer_app.reflectEdit(response.data);
-                        
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                      
-                    },
-                    showEditModal: function(index) {
-                        //console.log("index "+index);
-                        var item = this.developers[index];
-                        //console.log("item "+item);
-                        this.editIndex = index;
-                        this.developerEditId = item.id;
-                        this.developerEmail = item.email;
-                        this.selectedLanguages = item.languages;
-                        this.selectedProgrammingLanguages = item.programmingLanguages;
-                        this.showModalEdit= true;
-                    },
-                    showAddModal: function() {
-                      
-                        this.showModalAdd= true;
-                    },
-                },
-            });
-            
-            var language_app = new Vue({
-                el: '#languages',
-                data () {
-                    return {
-                        languages: null,
-                        languageCode: '',
-                        editIndex: '',
-                        languageEdiId: '',
-                        showModalEdit: false,
-                        showModalAdd: false
-                    }
-                },
-                mounted () {
-                   this.getLanguages();
-                },
-                methods : {
-                    reflectEdit: function(editedItem){
-                        this.languages[this.editIndex].code=editedItem.code;
-                         developer_app.getDevelopers();
-                    },
-                    getLanguages: function(){
-                        axios
-                        .get('/api/languages')
-                        .then(response => {
-                            this.languages = response.data;
-                            developer_app.languageOptions = this.languages;
-                            search_app.languageOptions = this.languages;
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                          });
-                    },
-                    postLanguage: function(){
-                        this.showModalAdd = false;
-                        axios.post('/api/languages/add', {
-                        code: this.languageCode
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        language_app.languageCode = '';
-                        language_app.languages.push(response.data);
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                    },
-                    putLanguage: function(){
-                        this.showModalEdit = false;
-                        axios.put('/api/languages/edit', {
-                        id: this.languageEditId,
-                        code: this.languageCode
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        language_app.languageCode = '';
-                        language_app.reflectEdit(response.data);
-                       
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                      
-                    },
-                    deleteLanguage: function(index){
-                        var l = this.languages[index];
-                        axios.delete('/api/languages/'+l.id);
-                        
-                        this.languages.splice(index, 1);
-                        developer_app.getDevelopers();
-                    },
-                    showEditModal: function(index) {
-                        //console.log("index "+index);
-                        var item = this.languages[index];
-                        //console.log("item "+item);
-                        this.editIndex = index;
-                        this.languageEditId = item.id;
-                        this.languageCode = item.code;
-                        this.showModalEdit= true;
-                    },
-                    showAddModal: function(){
-                        this.showModalAdd = true;
-                    },
-                },
-                
-            });
-            
-            var programming_language_app = new Vue({
-                el: '#programming-languages',
-                data () {
-                    return {
-                        programmingLanguages: null,
-                        programmingLanguageName: '',
-                        editIndex: '',
-                        programmingLanguageEdiId: '',
-                        showModalEdit: false,
-                        showModalAdd: false
-                        
-                    }
-                },
-                mounted () {
-                    
-                    this.getProgrammingLanguages();
-                },
-                methods : {
-                    reflectEdit: function(editedItem){
-                        this.programmingLanguages[this.editIndex].name = editedItem.name;
-                        developer_app.getDevelopers();
-                    },
-                    getProgrammingLanguages: function(){
-                        axios
-                        .get('/api/programming-languages')
-                        .then(response => {
-                            this.programmingLanguages = response.data;
-                            developer_app.programmingLanguageOptions = this.programmingLanguages;
-                            search_app.programmingLanguageOptions = this.programmingLanguages;
+        <script type="text/babel" th:src="@{/js/developer_app.js}"></script>
+        <script type="text/babel" th:src="@{/js/language_app.js}"></script>
+        <script type="text/babel" th:src="@{/js/programming_language_app.js}"></script>
 
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                          });
-                    },
-                    postProgrammingLanguage: function(){
-                                            
-                        this.showModalAdd = false;
-                        axios.post('/api/programming-languages/add', {
-                        name: this.programmingLanguageName
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        programming_language_app.programmingLanguageName = '';
-                        programming_language_app.programmingLanguages.push(response.data);
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                    },
-                    
-                    putProgrammingLanguage: function(){
-                        this.showModalEdit = false;
-                        axios.put('/api/programming-languages/edit', {
-                        id: this.programmingLanguageEditId,
-                        name: this.programmingLanguageName
-                      })
-                      .then(function (response) {
-                        console.log(response);
-                        programming_language_app.programmingLanguageName = '';
-                        programming_language_app.reflectEdit(response.data);
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-                      
-                    },
-                    
-                    deleteProgrammingLanguage: function(index){
-                        var p = this.programmingLanguages[index];
-                        axios.delete('/api/programming-languages/'+p.id);
-                        
-                        this.programmingLanguages.splice(index, 1);
-                        developer_app.getDevelopers();
-                    },
-                    
-                    showEditModal: function(index) {
-                        var item = this.programmingLanguages[index];
-                        this.editIndex = index;
-                        this.programmingLanguageEditId = item.id;
-                        this.programmingLanguageName = item.name;
-                        this.showModalEdit = true;
-                    },
-                    showAddModal: function(){
-                        this.showModalAdd = true;
-                        
-                    },
-                },
-                
-            });
-            
-        </script>
         
         
        

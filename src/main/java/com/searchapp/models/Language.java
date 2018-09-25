@@ -16,6 +16,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  *
@@ -33,10 +35,11 @@ public class Language {
     @Column(name = "code", nullable = false)
     private String code;
 
-//    @ManyToMany(fetch = FetchType.LAZY,
-//            cascade = CascadeType.ALL,
-//            mappedBy = "languages")
-//    private Set<Developer> developers = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY,
+           
+            mappedBy = "languages")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Developer> developers = new HashSet<>();
 //    
     public Language(){
     }

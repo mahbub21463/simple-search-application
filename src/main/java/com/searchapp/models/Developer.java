@@ -20,6 +20,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  *
@@ -47,6 +49,7 @@ public class Developer {
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(name = "developer_languages",
             joinColumns = {
                 @JoinColumn(name = "developer_id")},
@@ -54,9 +57,10 @@ public class Developer {
                 @JoinColumn(name = "language_id")})
     private Set<Language> languages = new HashSet<>();
     
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+    @ManyToMany(fetch = FetchType.LAZY
+           
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(name = "developer_programming_languages",
             joinColumns = {
                 @JoinColumn(name = "developer_id")},

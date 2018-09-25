@@ -64,10 +64,20 @@ var language_app = new Vue({
                     },
                     deleteLanguage: function(index){
                         var l = this.languages[index];
-                        axios.delete('/api/languages/'+l.id);
+                        axios.delete('/api/languages/'+l.id)
+                        .then(function (response) {
+                            console.log(response);
+                            if(response.status == 200){
+                            language_app.languages.splice(index, 1);
+                            developer_app.getDevelopers();
+                        }
+                       
+                        })
+                        .catch(function (error) {
+                          console.log(error);
+                        });
                         
-                        this.languages.splice(index, 1);
-                        developer_app.getDevelopers();
+                        
                     },
                     showEditModal: function(index) {
                         //console.log("index "+index);

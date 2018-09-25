@@ -36,8 +36,18 @@ var developer_app = new Vue({
                     },
                     deleteDeveloper: function(index){
                         var d = this.developers[index];
-                        axios.delete('/api/developers/'+d.id);
-                        this.developers.splice(index, 1);
+                        axios.delete('/api/developers/'+d.id)
+                        .then(function (response) {
+                            console.log(response);
+                            if(response.status == 200){
+                            developer_app.developers.splice(index, 1);
+                        }
+                            
+                       
+                        })
+                        .catch(function (error) {
+                          console.log(error);
+                        });
                     },
                     getDevelopers: function(){
                         axios

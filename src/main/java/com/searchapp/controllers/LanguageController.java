@@ -42,6 +42,7 @@ public class LanguageController {
        }
        else{
            throw new ResourceNotFoundException("Language not found with id - " + id);
+           
        }
    }
    @PostMapping("/add")
@@ -57,7 +58,15 @@ public class LanguageController {
    @DeleteMapping("/{id}")
    public void deleteLanguage(@PathVariable Integer id)
    {
+       Optional<Language> language = languageRepository.findById(id);
+       if(!language.isPresent())
+       {
+           throw new ResourceNotFoundException("Language not found with id - " + id);
+           
+       }
+      
        languageRepository.deleteById(id);
+       
    }
     
 }

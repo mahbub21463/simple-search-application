@@ -69,10 +69,18 @@ var programming_language_app = new Vue({
                     
                     deleteProgrammingLanguage: function(index){
                         var p = this.programmingLanguages[index];
-                        axios.delete('/api/programming-languages/'+p.id);
-                        
-                        this.programmingLanguages.splice(index, 1);
-                        developer_app.getDevelopers();
+                        axios.delete('/api/programming-languages/'+p.id)
+                        .then(function (response) {
+                            console.log(response);
+                            if(response.status == 200){
+                            programming_language_app.programmingLanguages.splice(index, 1);
+                            developer_app.getDevelopers();
+                         }
+                       
+                        })
+                        .catch(function (error) {
+                          console.log(error);
+                        });
                     },
                     
                     showEditModal: function(index) {

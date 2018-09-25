@@ -44,6 +44,7 @@ public class ProgrammingLanguageController {
        }
        else{
            throw new ResourceNotFoundException("Programming Language not found with id - " + id);
+         
        }
    }
    
@@ -61,7 +62,16 @@ public class ProgrammingLanguageController {
    @DeleteMapping("/{id}")
    public void deleteProgrammingLanguage(@PathVariable Integer id)
    {
+       Optional<ProgrammingLanguage> programmingLanguage = programmingLanguageRepository.findById(id);
+       if(!programmingLanguage.isPresent())
+       {
+           throw new ResourceNotFoundException("Programming Language not found with id - " + id);
+          
+       }
+      
+       
        programmingLanguageRepository.deleteById(id);
+       
    }
     
 }

@@ -2,6 +2,7 @@ package com.searchapp.controllers;
 
 import com.searchapp.dao.DeveloperRepository;
 import com.searchapp.dao.ProgrammingLanguageRepository;
+import com.searchapp.exceptions.ErrorDetails;
 import com.searchapp.exceptions.ResourceNotFoundException;
 import com.searchapp.models.Developer;
 import com.searchapp.models.Language;
@@ -102,6 +103,7 @@ public class DeveloperController {
        }
        else{
            throw new ResourceNotFoundException("Developer not found with id - " + id);
+           
        }
    }
    
@@ -122,7 +124,15 @@ public class DeveloperController {
    @DeleteMapping("/{id}")
    public void deleteDeveloper(@PathVariable Integer id)
    {
+       Optional<Developer> developer = developerRepository.findById(id);
+       if(!developer.isPresent())
+       {
+           throw new ResourceNotFoundException("Developer not found with id - " + id);
+          
+       }
+     
        developerRepository.deleteById(id);
+       
    }
     
 }

@@ -20,10 +20,11 @@ import org.springframework.stereotype.Repository;
 @Repository("developerRepository")
 public interface DeveloperRepository extends CrudRepository<Developer, Integer> {
     
-    List<Developer> findByLanguages_CodeAndProgrammingLanguages_Name(String code, String name);
-    List<Developer> findByLanguages_CodeIn(List<String> codes);
-    List<Developer> findByProgrammingLanguages_NameIn(List<String> names);
-    List<Developer> findByLanguages_CodeInAndProgrammingLanguages_NameIn(List<String> codes, List<String> names);
+    public Developer findByEmail(String email);
+    public List<Developer> findByLanguages_CodeAndProgrammingLanguages_Name(String code, String name);
+    public List<Developer> findByLanguages_CodeIn(List<String> codes);
+    public List<Developer> findByProgrammingLanguages_NameIn(List<String> names);
+    public List<Developer> findByLanguages_CodeInAndProgrammingLanguages_NameIn(List<String> codes, List<String> names);
 
     
 }

@@ -7,6 +7,7 @@ import com.searchapp.exceptions.ResourceNotFoundException;
 import com.searchapp.models.Developer;
 import com.searchapp.models.Language;
 import com.searchapp.models.ProgrammingLanguage;
+import com.searchapp.services.ProgrammingLanguageService;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,48 +30,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProgrammingLanguageController {
 
     @Autowired
-    ProgrammingLanguageRepository programmingLanguageRepository;
+    ProgrammingLanguageService programmingLanguageService;
+    
+    
     
    @GetMapping()
    public Iterable<ProgrammingLanguage> findAll() {
-       return programmingLanguageRepository.findAll();
+       return programmingLanguageService.findAll();
+   }
+   @GetMapping("/search-not-used-programming-languages")
+   public List<ProgrammingLanguage> searchNotUsedByDevelopers()
+   {
+       return programmingLanguageService.searchNotUsedByDevelopers();
+       
+   
    }
    @GetMapping("/{id}")
    public ProgrammingLanguage findOne(@PathVariable("id") Integer id) {
-       Optional<ProgrammingLanguage> programmingLanguage = programmingLanguageRepository.findById(id);
-       if(programmingLanguage.isPresent())
-       {
-           return programmingLanguage.get();
-       }
-       else{
-           throw new ResourceNotFoundException("Programming Language not found with id - " + id);
-         
-       }
+       return programmingLanguageService.findOne(id);
+       
    }
    
    @PostMapping("/add")
    public ProgrammingLanguage postLanguage(@RequestBody ProgrammingLanguage programmingLanguage){
-       programmingLanguage = programmingLanguageRepository.save(programmingLanguage);
-       return programmingLanguage;
+       return programmingLanguageService.addLanguage(programmingLanguage);
+       
    }
    @PutMapping("/edit")
    public ProgrammingLanguage putLanguage(@RequestBody ProgrammingLanguage programmingLanguage){
-       programmingLanguage = programmingLanguageRepository.save(programmingLanguage);
-       return programmingLanguage;
+       return programmingLanguageService.editLanguage(programmingLanguage);
+      
    }
    
    @DeleteMapping("/{id}")
    public void deleteProgrammingLanguage(@PathVariable Integer id)
    {
-       Optional<ProgrammingLanguage> programmingLanguage = programmingLanguageRepository.findById(id);
-       if(!programmingLanguage.isPresent())
-       {
-           throw new ResourceNotFoundException("Programming Language not found with id - " + id);
-          
-       }
-      
-       
-       programmingLanguageRepository.deleteById(id);
+       programmingLanguageService.deleteProgrammingLanguage(id);
        
    }
     

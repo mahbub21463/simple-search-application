@@ -7,6 +7,7 @@ import com.searchapp.exceptions.ResourceNotFoundException;
 import com.searchapp.models.Developer;
 import com.searchapp.models.Language;
 import com.searchapp.models.ProgrammingLanguage;
+import com.searchapp.services.DeveloperService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,107 +32,52 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeveloperController {
 
     @Autowired
-    DeveloperRepository developerRepository;
-    
-    @Autowired
-    ProgrammingLanguageRepository programmingLanguageRepository;
+    DeveloperService developerService;
     
    @GetMapping()
    public Iterable<Developer> findAll() {
-       return developerRepository.findAll();
+       return developerService.findAll();
    }
    @GetMapping("/search-who-write-two-programming-language-speak-one-language")
    public Iterable<Developer> searchWhoWriteTwoProgrammingLanguageSpeakOneLanguage(@RequestParam(value="language") String language, @RequestParam(value="programmingLanguage") String[] programmingLanguages)
    {
+       
        if(language == null || programmingLanguages == null || programmingLanguages.length<2)
        {
            throw new RuntimeException("Invalid parameters");
        }
-       List<Developer> developers = developerRepository.findByLanguages_CodeAndProgrammingLanguages_Name(language, programmingLanguages[0]);
-       List<Developer> resultList = new ArrayList<>();
-       ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(programmingLanguages[1]);
-       if(programmingLanguage == null)
-       {
-           throw new RuntimeException("Invalid parameters");
-       }
-       for(Developer developer : developers)
-       {
-           if(developer.getProgrammingLanguages().contains(programmingLanguage))
-           {
-               resultList.add(developer);
-           }
-       }
-       return resultList;
+       return developerService.searchWhoWriteTwoProgrammingLanguageSpeakOneLanguage(language, programmingLanguages);
+       
    }
    @GetMapping("/search")
    public Iterable<Developer> search(@RequestParam(value="language", required=false) String[] languages, @RequestParam(value="programmingLanguage", required=false) String[] programmingLanguages)
    {
-       if(languages == null && programmingLanguages == null)
-       {
-           return null;
-       }
-       else if(languages == null)
-       {
-           return developerRepository.findByProgrammingLanguages_NameIn(Arrays.asList(programmingLanguages));
-       }
-       else if(programmingLanguages == null)
-       {
-                     
-           return developerRepository.findByLanguages_CodeIn(Arrays.asList(languages));
- 
-       }
-       else
-       {
-                  
-           return developerRepository.findByLanguages_CodeInAndProgrammingLanguages_NameIn(Arrays.asList(languages), Arrays.asList(programmingLanguages));
-
-       }
+       return developerService.search(languages, programmingLanguages);
+       
        
    }
-//   @PostMapping("/search")
-//   public Iterable<Developer> search(@RequestBody Developer criteria)
-//   {
-//       
-//       return developerRepository.findByLanguages(criteria.getLanguages());
-//   }
+
    @GetMapping("/{id}")
    public Developer findOne(@PathVariable("id") Integer id) {
-       Optional<Developer> developer = developerRepository.findById(id);
-       if(developer.isPresent())
-       {
-           return developer.get();
-       }
-       else{
-           throw new ResourceNotFoundException("Developer not found with id - " + id);
-           
-       }
+       return developerService.findOne(id);
+       
    }
    
    @PostMapping("/add")
    public Developer postDeveloper(@RequestBody Developer developer){
-       Developer newDeveloper = new Developer(developer.getEmail());
-       newDeveloper = developerRepository.save(newDeveloper);
-       newDeveloper.setLanguages(developer.getLanguages());
-       newDeveloper.setProgrammingLanguages(developer.getProgrammingLanguages());
-       newDeveloper = developerRepository.save(newDeveloper);
-       return newDeveloper;
+       return developerService.addDeveloper(developer);
+       
    }
    @PutMapping("/edit")
    public Developer putDeveloper(@RequestBody Developer developer){
-       developer = developerRepository.save(developer);
-       return developer;
+       return developerService.editDeveloper(developer);
+       
    }
    @DeleteMapping("/{id}")
    public void deleteDeveloper(@PathVariable Integer id)
    {
-       Optional<Developer> developer = developerRepository.findById(id);
-       if(!developer.isPresent())
-       {
-           throw new ResourceNotFoundException("Developer not found with id - " + id);
-          
-       }
-     
-       developerRepository.deleteById(id);
+       developerService.deleteDeveloper(id);
+       
        
    }
     

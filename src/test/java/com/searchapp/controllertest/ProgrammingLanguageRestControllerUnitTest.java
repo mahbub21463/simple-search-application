@@ -15,6 +15,7 @@ import com.searchapp.dao.ProgrammingLanguageRepository;
 import com.searchapp.models.Developer;
 import com.searchapp.models.Language;
 import com.searchapp.models.ProgrammingLanguage;
+import com.searchapp.services.ProgrammingLanguageService;
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
@@ -35,9 +36,10 @@ public class ProgrammingLanguageRestControllerUnitTest {
  
     @Autowired
     private MockMvc mvc;
- 
+    
     @MockBean
-    private ProgrammingLanguageRepository programmingLanguageRepository;
+    private ProgrammingLanguageService programmingLanguageService;
+ 
  
     @Test
     public void givenDevelopers_whenGetProgrammingLanguages_thenReturnJsonArray()
@@ -47,9 +49,9 @@ public class ProgrammingLanguageRestControllerUnitTest {
 
         List<ProgrammingLanguage> allProgrammingLanguages = Arrays.asList(programmingLanguage);
 
-        given(programmingLanguageRepository.findAll()).willReturn(allProgrammingLanguages);
+        given(programmingLanguageService.findAll()).willReturn(allProgrammingLanguages);
         
-        mvc.perform(get("/api/porgramming-languages")
+        mvc.perform(get("/api/programming-languages")
           .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$", hasSize(1)))

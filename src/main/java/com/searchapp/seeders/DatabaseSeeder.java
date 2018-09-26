@@ -19,33 +19,57 @@ import java.util.List;
 import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
 
-
+@Component
 public class DatabaseSeeder {
 
-    DeveloperRepository developerRepository =BeanUtil.getBean(DeveloperRepository.class);
-    LanguageRepository languageRepository =BeanUtil.getBean(LanguageRepository.class);
-    ProgrammingLanguageRepository programmingLanguageRepository =BeanUtil.getBean(ProgrammingLanguageRepository.class);
+    DeveloperRepository developerRepository ;//=BeanUtil.getBean(DeveloperRepository.class);
+    LanguageRepository languageRepository;// =BeanUtil.getBean(LanguageRepository.class);
+    ProgrammingLanguageRepository programmingLanguageRepository;// =BeanUtil.getBean(ProgrammingLanguageRepository.class);
+
+//    DeveloperRepository developerRepository =BeanUtil.getBean(DeveloperRepository.class);
+//    LanguageRepository languageRepository =BeanUtil.getBean(LanguageRepository.class);
+//    ProgrammingLanguageRepository programmingLanguageRepository =BeanUtil.getBean(ProgrammingLanguageRepository.class);
 
     
-
-//    @Autowired
-//    public DatabaseSeeder(
-//            DeveloperRepository developerRepository,
-//            LanguageRepository languageRepository,
-//            ProgrammingLanguageRepository programmingLanguageRepository) {
-//        this.developerRepository = developerRepository;
-//        this.languageRepository = languageRepository;
-//        this.programmingLanguageRepository = programmingLanguageRepository;
+//    private static DatabaseSeeder instance;
+//
+//    static {
+//        try {
+//            instance = new DatabaseSeeder();
+//        } catch (Exception e) {
+//            throw new RuntimeException("Exception occured in creating singleton instance");
+//        }
+//    }
+//
+//    public static DatabaseSeeder getInstance() {
+//        return instance;
+//    }
+//    private DatabaseSeeder(){
 //    }
 
-    public void seed() {
+    @Autowired
+    public DatabaseSeeder(DeveloperRepository developerRepository,
+            LanguageRepository languageRepository,
+            ProgrammingLanguageRepository programmingLanguageRepository)
+    {
+        this.developerRepository = developerRepository;
+        this.languageRepository = languageRepository;
+        this.programmingLanguageRepository = programmingLanguageRepository;
+    }
+
+    @EventListener
+    public void seedOnStartup(ContextRefreshedEvent event) {
+        
+       seed();
+    }
+    public void seed()
+    {
         languageRepository.deleteAll();
         programmingLanguageRepository.deleteAll();
         developerRepository.deleteAll();
         List<Language> languageList = seedLanguagesTable();
         List<ProgrammingLanguage> programmingLanguageList = seedProgrammingLanguagesTable();
         seedDevelopersTable(100, languageList, programmingLanguageList);
-       
     }
 
     private void seedDevelopersTable(int recordCount, List<Language> languageList, List<ProgrammingLanguage> programmingLanguageList) {

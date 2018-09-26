@@ -11,7 +11,6 @@ public class SimpleSearchApplicationTests {
 
 	@Test
 	public void contextLoads() {
-            System.out.println("context load test");
 	}
 
 }

@@ -74,6 +74,13 @@ var search_app = new Vue({
                       .catch(function (error) {
                         console.log(error);
                       });
+                    },
+                    searchNotUsedProgrammingLanguages: function(){
+                        axios.get('/api/programming-languages/search-not-used-programming-languages')
+                      .then(response => (programming_language_app.programmingLanguages = response.data))
+                      .catch(function (error) {
+                        console.log(error);
+                      });
                     }
                    
                 },

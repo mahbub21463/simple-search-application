@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.searchapp.controllers.DeveloperController;
 import com.searchapp.dao.DeveloperRepository;
+import com.searchapp.dao.ProgrammingLanguageRepository;
 import com.searchapp.models.Developer;
+import com.searchapp.services.DeveloperService;
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,10 +31,14 @@ public class DeveloperRestControllerUnitTest {
  
     @Autowired
     private MockMvc mvc;
- 
+    
     @MockBean
-    private DeveloperRepository developerRepository;
+    private DeveloperService developerService;
  
+    
+    
+   
+    
     @Test
     public void givenDevelopers_whenGetDevelopers_thenReturnJsonArray()
       throws Exception {
@@ -41,9 +47,9 @@ public class DeveloperRestControllerUnitTest {
 
         List<Developer> allDevelopers = Arrays.asList(developer);
 
-        given(developerRepository.findAll()).willReturn(allDevelopers);
+        given(developerService.findAll()).willReturn(allDevelopers);
         
-        mvc.perform(get("/api/develpers")
+        mvc.perform(get("/api/developers")
           .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$", hasSize(1)))

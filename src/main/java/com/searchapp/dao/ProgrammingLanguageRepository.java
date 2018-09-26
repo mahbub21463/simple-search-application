@@ -5,7 +5,9 @@
  */
 package com.searchapp.dao;
 
+import com.searchapp.models.Developer;
 import com.searchapp.models.ProgrammingLanguage;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -15,4 +17,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface ProgrammingLanguageRepository extends CrudRepository<ProgrammingLanguage, Integer> {
     
     public ProgrammingLanguage findByName(String name);
+    public List<ProgrammingLanguage> findDistinctByDevelopersIn(Iterable<Developer> developerList);
 }
